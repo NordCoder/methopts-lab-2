@@ -47,7 +47,6 @@ class AbstractOptimizer(ABC):
 
     def run(self) -> OptimizationResult:
         x, history = self.optimize()
-        print(history)
         return OptimizationResult(
             x=x,
             iterations=len(history['x']),

@@ -3,7 +3,6 @@ import numpy as np
 from experiments.base.single_test import single_test
 from functions.funcs import hess_quadratic_cond_100, grad_quadratic_cond_100, quadratic_cond_100
 from methods.abstractions.abstract_optimizator import AbstractOptimizer
-from methods.newton.scipy_nelder_mead import SciPyNelderMead
 from methods.newton.scipy_newton_cg import SciPyNewtonCG
 
 
@@ -15,11 +14,11 @@ def test_with_diff_hyperparams(functions, gradients, hessians):
         for hyperparam in hyperparams:
             for x0 in x_0s:
                 optimizer: AbstractOptimizer = SciPyNewtonCG(functions[i],
-                                                                x0,
-                                                                gradients[i],
-                                                                hessians[i],
-                                                                maxiter=hyperparam['maxiter'],
-                                                                tol=hyperparam['tol'])
+                                                             x0,
+                                                             gradients[i],
+                                                             hessians[i],
+                                                             maxiter=hyperparam['maxiter'],
+                                                             tol=hyperparam['tol'])
 
                 single_test(optimizer, f"{functions[i].__name__} {x0}",
                             [functions[i].__name__, str(x0), str(i)])

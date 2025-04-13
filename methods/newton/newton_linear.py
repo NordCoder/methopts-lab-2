@@ -13,9 +13,11 @@ class NewtonLineSearch(AbstractOptimizer):
         self.x0 = x0.copy()
         self.params = kwargs
 
+        self.step_selector = kwargs.get("step_selector", golden_section_line_search)
+
     def line_search(self, x: np.ndarray, grad: np.ndarray, hess: np.ndarray) -> float:
         direction = -np.linalg.solve(hess, grad)
-        alpha = golden_section_line_search(self.counted_function, x, direction, **self.params)
+        alpha = self.step_selector(self.counted_function, x, direction, **self.params)
         return alpha
 
     def optimize(self) -> Tuple[np.ndarray, HistoryDict]:
