@@ -7,10 +7,8 @@ from methods.scheduled_gradient_descent.scheduled_gradient_descent import Custom
 
 
 def test_with_diff_hyperparams(functions, grads):
-    strategies = [
-        'constant', 'exp_decay', 'piecewise', 'poly_decay'
-    ]
-    hyperparams = [[0.1, 40, 0.5, 1, 0.01]]
+    strategies = ['constant', 'exp_decay', 'piecewise', 'poly_decay']
+    hyperparams = [{'initial_lr': 0.1, 'step_size': 40, 'alpha': 0.5, 'beta': 1, 'lambda_exp': 0.01, 'tol': 1e-6, 'maxiter': 1500}]
 
     x_0s = [np.array([1, 1])]
 
@@ -24,11 +22,13 @@ def test_with_diff_hyperparams(functions, grads):
                         x0,
                         strategy,
                         grads[i],
-                        initial_lr=hyperparam[0],
-                        step_size=hyperparam[1],
-                        alpha=hyperparam[2],
-                        beta=hyperparam[3],
-                        lambda_exp=hyperparam[4]
+                        tol=hyperparam['tol'],
+                        maxiter=hyperparam['maxiter'],
+                        initial_lr=hyperparam['initial_lr'],
+                        step_size=hyperparam['step_size'],
+                        alpha=hyperparam['alpha'],
+                        beta=hyperparam['beta'],
+                        lambda_exp=hyperparam['lambda_exp']
                     )
 
                     single_test(optimizer, f"{functions[i].__name__} {x0} {strategy}",
