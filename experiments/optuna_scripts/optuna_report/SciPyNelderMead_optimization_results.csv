@@ -1,0 +1,4 @@
+Function,tol,max_iter,step_selector
+quadratic_cond_100,6.238012872378644e-06,1473,<function golden_section_line_search at 0x11aa454c0>
+three_hump_camel_function,1.1301293041819451e-08,1637,<function golden_section_line_search at 0x11aa454c0>
+sincos_landscape,9.523955638854428e-07,1394,<function golden_section_line_search at 0x11aa454c0>

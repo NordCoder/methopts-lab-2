@@ -1,7 +1,7 @@
 import numpy as np
 
 
-# ==== КВАДРАТИЧНЫЕ ФОРМЫ С РАЗНЫМ ЧИСЛОМ ОБУСЛОВЛЕННОСТЕЙ ====
+# ==== 1ЕЙ ====
 
 def quadratic_cond_1(x: np.ndarray) -> float:
     """Квадратичная функция с числом обусловленности 1: f(x, y) = x^2 + y^2"""
@@ -30,13 +30,16 @@ def grad_quadratic_cond_1(x: np.ndarray) -> np.ndarray:
     """Градиент функции f(x, y) = x^2 + y^2"""
     return np.array([2 * x[0], 2 * x[1]])
 
+
 def grad_quadratic_cond_10(x: np.ndarray) -> np.ndarray:
     """Градиент функции f(x, y) = 10x^2 + y^2"""
     return np.array([20 * x[0], 2 * x[1]])
 
+
 def grad_quadratic_cond_100(x: np.ndarray) -> np.ndarray:
     """Градиент функции f(x, y) = 100x^2 + y^2"""
     return np.array([200 * x[0], 2 * x[1]])
+
 
 def grad_quadratic_cond_1000(x: np.ndarray) -> np.ndarray:
     """Градиент функции f(x, y) = 1000x^2 + y^2"""
@@ -45,20 +48,24 @@ def grad_quadratic_cond_1000(x: np.ndarray) -> np.ndarray:
 
 GRAD_QUADRATIC_LIST = [grad_quadratic_cond_1, grad_quadratic_cond_10, grad_quadratic_cond_100, grad_quadratic_cond_1000]
 
+
 def hess_quadratic_cond_1(x: np.ndarray) -> np.ndarray:
     """Гессиан функции f(x, y) = x^2 + y^2"""
     return np.array([[2, 0],
                      [0, 2]])
+
 
 def hess_quadratic_cond_10(x: np.ndarray) -> np.ndarray:
     """Гессиан функции f(x, y) = 10x^2 + y^2"""
     return np.array([[20, 0],
                      [0, 2]])
 
+
 def hess_quadratic_cond_100(x: np.ndarray) -> np.ndarray:
     """Гессиан функции f(x, y) = 100x^2 + y^2"""
     return np.array([[200, 0],
                      [0, 2]])
+
 
 def hess_quadratic_cond_1000(x: np.ndarray) -> np.ndarray:
     """Гессиан функции f(x, y) = 1000x^2 + y^2"""
@@ -124,6 +131,18 @@ def three_hump_camel_grad(x: np.ndarray) -> np.ndarray:
     dy = x[0] + 2 * x[1]
     return np.array([dx, dy])
 
+
+def three_hump_camel_hess(x: np.ndarray) -> np.ndarray:
+    """Гессиан функции трёхгорбого верблюда"""
+    d2f_dx2 = 4 - 12.6 * x[0]**2 + 5 * x[0]**4
+    d2f_dy2 = 2
+    d2f_dxdy = 1
+
+    hess = np.array([[d2f_dx2, d2f_dxdy],
+                     [d2f_dxdy, d2f_dy2]])
+    return hess
+
+
 def noisy_quadratic_function(x: np.ndarray, sigma: float = 0.1) -> float:
     """
     Классическая квадратичная функция с аддитивным гауссовым шумом.
@@ -132,14 +151,17 @@ def noisy_quadratic_function(x: np.ndarray, sigma: float = 0.1) -> float:
     noise = np.random.normal(0, sigma)
     return true_value + noise
 
+
 def noisy_quadratic_grad(x: np.ndarray) -> np.ndarray:
     """
     Градиент без шума — считаем, что градиент точный.
     """
     return np.array([2 * (x[0] - 3), 2 * (x[1] - 2)])
 
+
 def sincos_landscape(x: np.ndarray) -> float:
     return np.sin(x[0]) * np.cos(x[1]) + 0.1 * (x[0]**2 + x[1]**2)
+
 
 def grad_sincos_landscape(x: np.ndarray) -> np.ndarray:
     """
@@ -148,3 +170,14 @@ def grad_sincos_landscape(x: np.ndarray) -> np.ndarray:
     df_dx = np.cos(x[0]) * np.cos(x[1]) + 0.2 * x[0]
     df_dy = -np.sin(x[0]) * np.sin(x[1]) + 0.2 * x[1]
     return np.array([df_dx, df_dy])
+
+
+def sincos_landscape_hess(x: np.ndarray) -> np.ndarray:
+    """Гессиан функции sincos_landscape"""
+    d2f_dx2 = -np.sin(x[0]) * np.cos(x[1]) + 0.2
+    d2f_dy2 = -np.cos(x[0]) * np.sin(x[1]) + 0.2
+    d2f_dxdy = -np.cos(x[0]) * np.sin(x[1])
+
+    hess = np.array([[d2f_dx2, d2f_dxdy],
+                     [d2f_dxdy, d2f_dy2]])
+    return hess
