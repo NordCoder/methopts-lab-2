@@ -1,7 +1,5 @@
-import numpy as np
-
 from experiments.base.single_test import single_test
-from functions.funcs import quadratic_cond_10, grad_quadratic_cond_10
+from functions.funcs import *
 from methods.abstractions.abstract_optimizator import AbstractOptimizer
 from methods.newton.custom_bfgs import CustomBfgs
 

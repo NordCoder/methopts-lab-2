@@ -1,7 +1,6 @@
-import numpy as np
-
 from experiments.base.single_test import single_test
-from functions.funcs import hess_quadratic_cond_100, grad_quadratic_cond_100, quadratic_cond_100
+from functions.funcs import *
+
 from methods.abstractions.abstract_optimizator import AbstractOptimizer
 from methods.newton.scipy_newton_cg import SciPyNewtonCG
 

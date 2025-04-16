@@ -1,14 +1,14 @@
-import numpy as np
-
 from experiments.base.single_test import single_test
-from functions.funcs import quadratic_cond_1, grad_quadratic_cond_1
+from functions.funcs import *
+
 from methods.abstractions.abstract_optimizator import AbstractOptimizer
 from methods.scheduled_gradient_descent.scheduled_gradient_descent import CustomScheduledGradientDescent
 
 
 def test_with_diff_hyperparams(functions, grads):
     strategies = ['constant', 'exp_decay', 'piecewise', 'poly_decay']
-    hyperparams = [{'initial_lr': 0.1, 'step_size': 40, 'alpha': 0.5, 'beta': 1, 'lambda_exp': 0.01, 'tol': 1e-6, 'maxiter': 1500}]
+    hyperparams = [
+        {'initial_lr': 0.1, 'step_size': 40, 'alpha': 0.5, 'beta': 1, 'lambda_exp': 0.01, 'tol': 1e-6, 'maxiter': 1500}]
 
     x_0s = [np.array([1, 1])]
 

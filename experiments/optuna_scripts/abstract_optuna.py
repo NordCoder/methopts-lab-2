@@ -1,13 +1,19 @@
 import optuna
-import numpy as np
 import pandas as pd
 import os
 from typing import Callable
 
 from methods.linear_search import golden_section_line_search
 
+from functions.funcs import *
+
 optuna.logging.set_verbosity(optuna.logging.ERROR)
 
+optuna_functions = [
+    (quadratic_cond_100, grad_quadratic_cond_100, hess_quadratic_cond_100),
+    (three_hump_camel_function, three_hump_camel_grad, three_hump_camel_hessian),
+    (sincos_landscape, grad_sincos_landscape, sincos_hessian)
+]
 
 def objective(trial, func: Callable, grad_func: Callable, hess_func: Callable, optimizer_class: Callable) -> float:
 

@@ -1,7 +1,6 @@
-import numpy as np
-
 from experiments.base.single_test import single_test
-from functions.funcs import quadratic_cond_100, grad_quadratic_cond_100
+from functions.funcs import *
+
 from methods.abstractions.abstract_optimizator import AbstractOptimizer
 from methods.linear_search import ternary_search_line
 from methods.steepest_gradient_descent.steepest_gradient_descent import CustomGradientDescentOptimizer
@@ -25,6 +24,8 @@ def test_with_diff_hyperparams(functions, gradients):
                                                                                   tol=hyperparam['tol'],
                                                                                   maxiter=hyperparam['maxiter'])
 
-                    single_test(optimizer, f"{functions[i].__name__} {x0} {strategy.__name__}", [functions[i].__name__, str(x0), strategy.__name__, str(i)])
+                    single_test(optimizer, f"{functions[i].__name__} {x0} {strategy.__name__}",
+                                [functions[i].__name__, str(x0), strategy.__name__, str(i)])
+
 
 test_with_diff_hyperparams([quadratic_cond_100], [grad_quadratic_cond_100])
