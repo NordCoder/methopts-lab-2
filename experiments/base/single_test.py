@@ -36,7 +36,7 @@ def draw(optimizer: AbstractOptimizer, result: OptimizationResult, plot_title: s
         history=result.history,
         title=plot_title,
         save_path=filename.replace(".png", "_dual.png"),
-        # lim=4  # или 3, или auto
+        lim=4  # или 3, или auto
     )
 
     plot_surface_and_trajectory_with_path(

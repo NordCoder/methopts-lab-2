@@ -2,14 +2,14 @@ from experiments.base.single_test import single_test
 from functions.funcs import *
 
 from methods.abstractions.abstract_optimizator import AbstractOptimizer
-from methods.linear_search import ternary_search_line
+from methods.linear_search import golden_section_line_search
 from methods.steepest_gradient_descent.steepest_gradient_descent import CustomGradientDescentOptimizer
 
 
 def test_with_diff_hyperparams(functions, gradients):
-    strategies = [ternary_search_line]
+    strategies = [golden_section_line_search]
     hyperparams = [{'left': 0, 'right': 5, 'tol': 1e-6, 'maxiter': 1500}]
-    x_0s = [np.array([-5, 10])]
+    x_0s = [np.array([-4, -4])]
 
     for i in range(len(functions)):
         for strategy in strategies:
@@ -28,4 +28,4 @@ def test_with_diff_hyperparams(functions, gradients):
                                 [functions[i].__name__, str(x0), strategy.__name__, str(i)])
 
 
-test_with_diff_hyperparams([quadratic_cond_100], [grad_quadratic_cond_100])
+test_with_diff_hyperparams([sincos_landscape], [grad_sincos_landscape])
