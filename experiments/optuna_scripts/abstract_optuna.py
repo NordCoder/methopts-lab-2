@@ -1,9 +1,8 @@
-import optuna
-import pandas as pd
 import os
-from typing import Callable
-
-from methods.linear_search import golden_section_line_search
+import optuna
+import numpy as np
+import pandas as pd
+from typing import Callable, Dict, Any, List, Tuple
 
 from functions.funcs import *
 
@@ -15,60 +14,99 @@ optuna_functions = [
     (sincos_landscape, grad_sincos_landscape, sincos_hessian)
 ]
 
-def objective(trial, func: Callable, grad_func: Callable, hess_func: Callable, optimizer_class: Callable) -> float:
 
-    tol = trial.suggest_float('tol', 1e-8, 1e-4, log=True)
-    max_iter = trial.suggest_int('max_iter', 500, 2000)
-    step_selector = trial.suggest_categorical('step_selector', [golden_section_line_search])
+def _objective(
+    trial: optuna.Trial,
+    func: Callable,
+    grad_func: Callable,
+    hess_func: Callable,
+    optimizer_class: Callable,
+    x0: np.ndarray,
+    search_space: Dict[str, Callable[[optuna.Trial], Any]],
+    fixed_kwargs: Dict[str, Any],
+) -> float:
+    """
+    Внутренняя функция-цель для Optuna: собирает гиперпараметры произвольного вида.
+    """
+    trial_params = {name: suggest_fn(trial) for name, suggest_fn in search_space.items()}
 
-    x0 = np.array([1, 1])
+    optimizer_kwargs = {**fixed_kwargs, **trial_params}
 
     optimizer = optimizer_class(
         func,
         x0,
         grad=grad_func,
         hess=hess_func,
-        tol=tol,
-        max_iter=max_iter,
-        step_selector=step_selector
+        **optimizer_kwargs,
+    )
+    _, history = optimizer.optimize()
+
+    return history["f"][-1] 
+
+
+def optimize_for_all_functions(
+    functions: List[Tuple[Callable, Callable, Callable]],
+    optimizer_class: Callable,
+    search_space: Dict[str, Callable[[optuna.Trial], Any]],
+    *,
+    x0: np.ndarray | None = None,
+    fixed_kwargs: Dict[str, Any] | None = None,
+    n_trials: int = 50,
+    report_dir: str = "optuna_report",
+) -> pd.DataFrame:
+    """
+    Универсальный перебор гиперпараметров для набора тестовых функций.
+
+    Parameters
+    ----------
+    functions       : список кортежей (f, grad_f, hess_f)
+    optimizer_class : класс оптимизатора, совместимый по сигнатуре
+    search_space    : словарь {имя_параметра: lambda trial: trial.suggest_*()}
+    x0              : начальная точка (по умолчанию np.array([1, 1]))
+    fixed_kwargs    : фиксированные параметры, которые не тюним
+    n_trials        : количество экспериментов Optuna на каждую функцию
+    report_dir      : куда сохранить итоговый .csv-отчёт
+
+    Returns
+    -------
+    results_df      : DataFrame с лучшими гиперпараметрами для каждой функции
+    """
+    if x0 is None:
+        x0 = np.array([1.0, 1.0])
+    fixed_kwargs = fixed_kwargs or {}
+
+    os.makedirs(report_dir, exist_ok=True)
+    report_file = os.path.join(
+        report_dir, f"{optimizer_class.__name__}_optimization_results.csv"
     )
 
-    x_opt, history = optimizer.optimize()
-
-    f_opt = history['f'][-1]
-
-    return f_opt
-
-
-def optimize_for_all_functions(functions: list, optimizer_class: Callable):
-
-    report_dir = 'optuna_report'
-    if not os.path.exists(report_dir):
-        os.makedirs(report_dir)
-
-    report_file = os.path.join(report_dir, f"{optimizer_class.__name__}_optimization_results.csv")
-
-    results = []
+    results: List[Dict[str, Any]] = []
 
     for func, grad_func, hess_func in functions:
-        print(f"Optimizing function: {func.__name__} using {optimizer_class.__name__}")
+        print(f"Optimizing {func.__name__} with {optimizer_class.__name__}")
 
-        study = optuna.create_study(direction='minimize')
-
-        study.optimize(lambda trial: objective(trial, func, grad_func, hess_func, optimizer_class), n_trials=50)
+        study = optuna.create_study(direction="minimize")
+        study.optimize(
+            lambda tr: _objective(
+                tr,
+                func,
+                grad_func,
+                hess_func,
+                optimizer_class,
+                x0,
+                search_space,
+                fixed_kwargs,
+            ),
+            n_trials=n_trials,
+        )
 
         best_params = study.best_params
-        print(f"Best hyperparameters for {func.__name__}: {best_params}")
-        print("-" * 50)
+        print(f"Best params for {func.__name__}: {best_params}\n{'-'*50}")
 
-        results.append({
-            'Function': func.__name__,
-            'tol': best_params['tol'],
-            'max_iter': best_params['max_iter'],
-            'step_selector': best_params['step_selector']
-        })
+        results.append({"Function": func.__name__, **best_params})
 
     results_df = pd.DataFrame(results)
-
     results_df.to_csv(report_file, index=False)
+    print(f"Full report saved to: {report_file}")
 
+    return results_df
